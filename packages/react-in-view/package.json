@@ -1,0 +1,21 @@
+{
+  "name": "react-in-view",
+  "version": "0.0.1-alpha.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Benjamin Huang",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.4.1"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2"
+  },
+  "devDependencies": {
+    "react-dom": "^16.4.1"
+  }
+}
