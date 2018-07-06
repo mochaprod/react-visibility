@@ -1,7 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { inViewportWidth, inViewportHeight } from "../util/viewportEvaluators";
+import {
+    inViewportWidth as isInViewportWidth,
+    inViewportHeight as isInViewportHeight
+} from "../util/viewportEvaluators";
 
 class InView extends React.Component {
     static propTypes = {
@@ -26,6 +29,8 @@ class InView extends React.Component {
     };
 
     static defaultProps = {
+        onViewEnter: null,
+        onViewExit: null,
         activeElement: window,
         event: "string"
     };
@@ -76,11 +81,11 @@ class InView extends React.Component {
         const {
             inView: inHeight,
             completelyInView: inHeightFully
-        } = inViewportHeight(trackedElement);
+        } = isInViewportHeight(trackedElement);
         const {
             inView: inWidth,
             completelyInView: inWidthFully
-        } = inViewportWidth(trackedElement);
+        } = isInViewportWidth(trackedElement);
 
         const nextInView = inHeight && inWidth;
         const nextCompletelyInView = inHeightFully && inWidthFully;
@@ -94,6 +99,7 @@ class InView extends React.Component {
             enteredView
         } = this.state;
 
+        // `enteredView` will stay `true` after being `false`.
         const nextEnteredView = nextInView || enteredView;
 
         const needsUpdating =
@@ -119,8 +125,9 @@ class InView extends React.Component {
     };
 
     componentDidMount() {
+        const { activeElement, event } = this.props;
+
         if (activeElement && activeElement.addEventListener) {
-            const { activeElement, event } = this.props;
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
@@ -142,7 +149,10 @@ class InView extends React.Component {
 
     render() {
         const { children } = this.props;
-        const { inView, enteredView } = this.state;
+        const {
+            inView,
+            enteredView
+        } = this.state;
 
         return children({
             ref: this.createTracker,

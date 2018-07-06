@@ -4,6 +4,4 @@ const viewportHeight = () =>
 const viewportWidth = () =>
     window.innerWidth || document.documentElement.clientWidth;
 
-export {
-    viewportHeight, viewportWidth
-};
+export { viewportHeight, viewportWidth };
