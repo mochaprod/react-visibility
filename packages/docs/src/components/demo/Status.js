@@ -18,7 +18,9 @@ class Status extends React.Component {
                 <ul className={Style.list}>
                     {
                         Object.keys(this.state).map(key => (
-                            <li>{`${key}: ${this.state[key]}`}</li>
+                            <li key={key}>
+                                {`${key}: ${this.state[key]}`}
+                            </li>
                         ))
                     }
                 </ul>

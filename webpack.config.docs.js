@@ -77,6 +77,7 @@ module.exports = {
     devServer: {
         hot: true,
         compress: true,
-        contentBase: PUBLIC_PATH
+        contentBase: PUBLIC_PATH,
+        host: "0.0.0.0"
     }
 };
