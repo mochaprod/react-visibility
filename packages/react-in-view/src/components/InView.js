@@ -35,7 +35,9 @@ class InView extends React.Component {
         activeElement: PropTypes.instanceOf(Element),
 
         // The event to bind to `props.activeElement`.
-        event: PropTypes.string
+        event: PropTypes.string,
+
+        exposeState: PropTypes.func
     };
 
     static defaultProps = {
@@ -44,7 +46,8 @@ class InView extends React.Component {
         onFirstViewEnter: null,
         onViewFullyEnter: null,
         activeElement: window,
-        event: "scroll"
+        event: "scroll",
+        exposeState: null
     };
 
     state = {
@@ -124,14 +127,22 @@ class InView extends React.Component {
             nextEnteredView !== enteredView;
 
         if (needsUpdating) {
-            this.setState({
-                inView: nextInView,
-                inViewportHeight: inHeight,
-                inViewportWidth: inWidth,
-                fullyInView: nextCompletelyInView,
-                fullyInViewportHeight: inHeightFully,
-                fullyInViewportWidth: inWidthFully,
-                enteredView: nextEnteredView
+            this.setState(prevState => {
+                // Capture the previous state so that `state`s can be
+                // diff'd outside `<InView>`.
+                this.inViewPrevState = {
+                    ...prevState
+                };
+
+                return {
+                    inView: nextInView,
+                    inViewportHeight: inHeight,
+                    inViewportWidth: inWidth,
+                    fullyInView: nextCompletelyInView,
+                    fullyInViewportHeight: inHeightFully,
+                    fullyInViewportWidth: inWidthFully,
+                    enteredView: nextEnteredView
+                };
             });
         }
     };
@@ -167,6 +178,13 @@ class InView extends React.Component {
                 callback(prevState[state], this.state[state]);
             }
         });
+
+        // Expose the current state to upper components
+        const { exposeState } = this.props;
+
+        if (typeof exposeState === "function") {
+            exposeState(this.state);
+        }
     }
 
     componentWillUnmount() {
@@ -179,16 +197,11 @@ class InView extends React.Component {
 
     render() {
         const { children } = this.props;
-        const {
-            inView,
-            enteredView
-        } = this.state;
 
         return children({
             ref: this.createTracker,
-            inView,
-            enteredView
-        });
+            ...this.state
+        }, this.inViewPrevState);
     }
 }
 
