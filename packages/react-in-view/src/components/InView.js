@@ -182,7 +182,8 @@ class InView extends React.Component {
         // Expose the current state to upper components
         const { exposeState } = this.props;
 
-        if (typeof exposeState === "function") {
+        // Make sure that the `state` has actually changed
+        if (typeof exposeState === "function" && this.state !== prevState) {
             exposeState(this.state);
         }
     }

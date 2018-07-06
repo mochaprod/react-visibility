@@ -13,11 +13,12 @@ const createViewportEvaluator = (viewportDimension, upperValue, lowerValue) =>
         const rect = element.getBoundingClientRect();
         const upper = rect[upperValue];
         const lower = rect[lowerValue];
+        const latestViewportDimension = viewportDimension();
 
         const inView = (upper >= 0 || lower >= 0) &&
-            (upper < viewportDimension || lower < viewportDimension);
+            (upper < latestViewportDimension || lower < latestViewportDimension);
         const completelyInView = upper >= 0 && lower >= 0 &&
-            upper < viewportDimension && lower < viewportDimension;
+            upper < latestViewportDimension && lower < latestViewportDimension;
 
         return {
             inView,
@@ -26,13 +27,13 @@ const createViewportEvaluator = (viewportDimension, upperValue, lowerValue) =>
     };
 
 const inViewportHeight = createViewportEvaluator(
-    viewportHeight(),
+    viewportHeight,
     "top",
     "bottom"
 );
 
 const inViewportWidth = createViewportEvaluator(
-    viewportWidth(),
+    viewportWidth,
     "left",
     "right"
 );
