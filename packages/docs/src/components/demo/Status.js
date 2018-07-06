@@ -8,18 +8,21 @@ class Status extends React.Component {
 
     static defaultProps = {};
 
-    state = {
-        inView: false
-    };
-
     render() {
         return (
             <aside className={Style["status-box"]}>
                 <ul className={Style.list}>
                     {
-                        Object.keys(this.state).map(key => (
-                            <li key={key}>
-                                {`${key}: ${this.state[key]}`}
+                        Object.keys(this.props).map(key => (
+                            <li
+                                key={key}
+                                className={Style["list-item"]}>
+                                <span>
+                                    {`${key}:`}
+                                </span>
+                                <span>
+                                    {`${this.props[key]}`}
+                                </span>
                             </li>
                         ))
                     }
