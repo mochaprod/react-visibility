@@ -7,27 +7,31 @@ import Status from "./Status";
 
 class Test extends React.Component {
     state = {
-        inViewport: false,
-        enteredViewportBefore: false
+        inView: false,
+        inViewportHeight: false,
+        inViewportWidth: false,
+        fullyInView: false,
+        fullyInViewportHeight: false,
+        fullyInViewportWidth: false,
+        enteredView: false
     };
 
     viewportEnter = () => {
-        this.setState({
-            inViewport: true
-        }, () => console.log("Entered viewport!"));
+        console.log("Entered viewport!");
     };
 
     viewportExit = () => {
-        this.setState({
-            inViewport: false
-        }, () => console.log("Exited viewport!"));
+        console.log("Exited viewport!");
     };
 
     viewportFirstEntry = () => {
-        this.setState({
-            enteredViewportBefore: true
-        }, () => console.log("Entered the viewport for the first time!"));
+        console.log("Entered viewport for the first time!");
     };
+
+    expose = state =>
+        this.setState({
+            ...state
+        });
 
     render() {
         return (
@@ -36,9 +40,15 @@ class Test extends React.Component {
                 <InView
                     onViewEnter={this.viewportEnter}
                     onViewExit={this.viewportExit}
-                    onFirstViewEnter={this.viewportFirstEntry}>
-                    { ({ ref }) => (
-                        <Box passRef={ref} />
+                    onFirstViewEnter={this.viewportFirstEntry}
+                    exposeState={this.expose}>
+                    { ({ ref }, prevState) => (
+                        <Box passRef={ref}>
+                            <div>Box content; previous state:</div>
+                            <pre>
+                                { JSON.stringify(prevState, null, 4) }
+                            </pre>
+                        </Box>
                     ) }
                 </InView>
             </Container>
