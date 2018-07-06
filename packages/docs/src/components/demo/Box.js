@@ -4,7 +4,10 @@ import PropTypes from "prop-types";
 import Style from "./Box.scss";
 
 const Box = props => (
-    <div className={Style.box} ref={props.passRef} />
+    <div
+        className={Style.box}
+        ref={props.passRef}
+        {...props} />
 );
 
 Box.propTypes = {
