@@ -6,6 +6,10 @@ import {
     inViewportHeight as isInViewportHeight
 } from "../util/viewportEvaluators";
 
+import mapStateToCallbacks from "../util/mapStateToCallbacks";
+
+/* eslint react/no-unused-prop-types: off */
+
 class InView extends React.Component {
     static propTypes = {
         children: PropTypes.func.isRequired,
@@ -18,6 +22,12 @@ class InView extends React.Component {
         // ...or, a state change of `inView` from `true` -> `false`
         onViewExit: PropTypes.func,
 
+        // Called when the ref'd DOM node enteres the viewport for the
+        // first time.
+        onFirstViewEnter: PropTypes.func,
+
+        onViewFullyEnter: PropTypes.func,
+
         // The element to actively monitor for changes such as scroll
         // event. When the event is fired, a re-calculation of the tracked
         // element's position in the DOM is made and `state` is updated
@@ -25,14 +35,19 @@ class InView extends React.Component {
         activeElement: PropTypes.instanceOf(Element),
 
         // The event to bind to `props.activeElement`.
-        event: PropTypes.string
+        event: PropTypes.string,
+
+        exposeState: PropTypes.func
     };
 
     static defaultProps = {
         onViewEnter: null,
         onViewExit: null,
+        onFirstViewEnter: null,
+        onViewFullyEnter: null,
         activeElement: window,
-        event: "scroll"
+        event: "scroll",
+        exposeState: null
     };
 
     state = {
@@ -112,14 +127,22 @@ class InView extends React.Component {
             nextEnteredView !== enteredView;
 
         if (needsUpdating) {
-            this.setState({
-                inView: nextInView,
-                inViewportHeight: inHeight,
-                inViewportWidth: inWidth,
-                fullyInView: nextCompletelyInView,
-                fullyInViewportHeight: inHeightFully,
-                fullyInViewportWidth: inWidthFully,
-                enteredView: nextEnteredView
+            this.setState(prevState => {
+                // Capture the previous state so that `state`s can be
+                // diff'd outside `<InView>`.
+                this.inViewPrevState = {
+                    ...prevState
+                };
+
+                return {
+                    inView: nextInView,
+                    inViewportHeight: inHeight,
+                    inViewportWidth: inWidth,
+                    fullyInView: nextCompletelyInView,
+                    fullyInViewportHeight: inHeightFully,
+                    fullyInViewportWidth: inWidthFully,
+                    enteredView: nextEnteredView
+                };
             });
         }
     };
@@ -127,16 +150,41 @@ class InView extends React.Component {
     componentDidMount() {
         const { activeElement, event } = this.props;
 
+        if (!this.trackingThis) {
+            throw new Error("<InView> mounted without a ref to a DOM element.");
+        }
+
         if (activeElement && activeElement.addEventListener) {
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
         }
+
+        // Populate initial state on mount.
+        this.recalculate();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState) {
         // Diffs old `state` with new `state` and calls
         // any appropriate callbacks.
+
+        const stateToCallback = mapStateToCallbacks(this.props);
+        let callback;
+
+        Object.keys(this.state).forEach(state => {
+            callback = stateToCallback[state];
+
+            if (callback) {
+                callback(prevState[state], this.state[state]);
+            }
+        });
+
+        // Expose the current state to upper components
+        const { exposeState } = this.props;
+
+        if (typeof exposeState === "function") {
+            exposeState(this.state);
+        }
     }
 
     componentWillUnmount() {
@@ -149,16 +197,11 @@ class InView extends React.Component {
 
     render() {
         const { children } = this.props;
-        const {
-            inView,
-            enteredView
-        } = this.state;
 
         return children({
             ref: this.createTracker,
-            inView,
-            enteredView
-        });
+            ...this.state
+        }, this.inViewPrevState);
     }
 }
 
