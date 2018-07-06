@@ -6,6 +6,10 @@ import {
     inViewportHeight as isInViewportHeight
 } from "../util/viewportEvaluators";
 
+import mapStateToCallbacks from "../util/mapStateToCallbacks";
+
+/* eslint react/no-unused-prop-types: off */
+
 class InView extends React.Component {
     static propTypes = {
         children: PropTypes.func.isRequired,
@@ -17,6 +21,12 @@ class InView extends React.Component {
         // Called when the ref'd DOM node leaves the viewport
         // ...or, a state change of `inView` from `true` -> `false`
         onViewExit: PropTypes.func,
+
+        // Called when the ref'd DOM node enteres the viewport for the
+        // first time.
+        onFirstViewEnter: PropTypes.func,
+
+        onViewFullyEnter: PropTypes.func,
 
         // The element to actively monitor for changes such as scroll
         // event. When the event is fired, a re-calculation of the tracked
@@ -31,6 +41,8 @@ class InView extends React.Component {
     static defaultProps = {
         onViewEnter: null,
         onViewExit: null,
+        onFirstViewEnter: null,
+        onViewFullyEnter: null,
         activeElement: window,
         event: "scroll"
     };
@@ -127,16 +139,34 @@ class InView extends React.Component {
     componentDidMount() {
         const { activeElement, event } = this.props;
 
+        if (!this.trackingThis) {
+            throw new Error("<InView> mounted without a ref to a DOM element.");
+        }
+
         if (activeElement && activeElement.addEventListener) {
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
         }
+
+        // Populate initial state on mount.
+        this.recalculate();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState) {
         // Diffs old `state` with new `state` and calls
         // any appropriate callbacks.
+
+        const stateToCallback = mapStateToCallbacks(this.props);
+        let callback;
+
+        Object.keys(this.state).forEach(state => {
+            callback = stateToCallback[state];
+
+            if (callback) {
+                callback(prevState[state], this.state[state]);
+            }
+        });
     }
 
     componentWillUnmount() {
