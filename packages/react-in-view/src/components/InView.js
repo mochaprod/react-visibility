@@ -32,7 +32,7 @@ class InView extends React.Component {
         onViewEnter: null,
         onViewExit: null,
         activeElement: window,
-        event: "string"
+        event: "scroll"
     };
 
     state = {
