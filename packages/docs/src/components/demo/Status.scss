@@ -7,10 +7,34 @@
     border-radius: 5px;
     border: 2px solid rgb(145, 145, 145);
     background: rgb(230, 230, 230);
+    box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.15);
+
+    width: 20%;
 }
 
 .list {
     margin: 0;
     padding: 0;
     list-style: none;
+
+    width: 100%;
+}
+
+.list-item {
+    display: flex;
+}
+
+.list-item > :first-child {
+    flex: 1 1 75%;
+
+    font-weight: 500;
+}
+
+.list-item > :nth-child(2) {
+    flex: 1 1 25%;
+
+    display: flex;
+    justify-content: flex-end;
+
+    font-family: "SF Mono", monaco, monospace;
 }
