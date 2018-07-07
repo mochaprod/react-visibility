@@ -1,5 +1,5 @@
 import React from "react";
-import { InView } from "ReactInView";
+import { InView } from "ReactVisibility";
 
 import Container from "./Container";
 import Box from "./Box";

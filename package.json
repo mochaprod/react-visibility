@@ -4,11 +4,12 @@
     "start": "webpack-dev-server --config ./webpack.config.docs.js",
     "set:dev": "NODE_ENV=development",
     "set:prod": "NODE_ENV=production",
+    "build:all": "npm run build:umd && npm run build:umd:production && npm run build:commonjs",
     "build:docs": "webpack --config ./webpack.config.docs.js",
     "build:umd": "npm run set:dev webpack",
     "build:umd:production": "npm run set:prod webpack",
     "build:commonjs": "BUILD_TYPE=commonjs2 npm run set:dev webpack",
-    "clean": "rm -rf dist/"
+    "clean": "rm -rf dist/ && rm -rf packages/react-in-view/dist/ && rm -rf packages/docs/public/static/"
   },
   "author": "Benjamin Huang",
   "license": "MIT",

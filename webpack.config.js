@@ -6,11 +6,12 @@ const DEVELOPMENT = "development";
 
 const isProduction = process.env.NODE_ENV === PRODUCTION;
 const buildType = process.env.BUILD_TYPE || "umd";
+const entryFile = "./packages/react-visibility/src/index.js";
 
 console.log(`Building in ${chalk.cyan(process.env.NODE_ENV)}...`);
 
 const getFileName = () =>
-    `react-in-view.${isProduction ? PRODUCTION : DEVELOPMENT}`;
+    `react-visibility.${buildType}.${isProduction ? PRODUCTION : DEVELOPMENT}`;
 
 /* eslint-disable */
 module.exports = {
@@ -20,8 +21,9 @@ module.exports = {
         "react": buildType === "umd" ? "React" : "react"
     },
     entry: {
-        [`./dist/${getFileName()}`]: "./packages/react-in-view/src/index.js",
-        [`./packages/docs/public/static/${getFileName()}`]: "./packages/react-in-view/src/index.js"
+        [`./dist/${getFileName()}`]: entryFile,
+        [`./packages/docs/public/static/${getFileName()}`]: entryFile,
+        [`./packages/react-visibility/dist/${getFileName()}`]: entryFile
     },
     output: {
         filename: "[name].js",

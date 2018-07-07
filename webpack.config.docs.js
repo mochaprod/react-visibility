@@ -15,7 +15,7 @@ module.exports = {
     externals: {
         "react": "React",
         "react-dom": "ReactDOM",
-        "react-in-view": "ReactInView"
+        "react-visibility": "ReactVisibility"
     },
     entry: "./packages/docs/src/App.js",
     output: {
@@ -71,7 +71,7 @@ module.exports = {
     resolve: {
         alias: {
             // Use convenient alias to get most up-to-date source.
-            "ReactInView": path.resolve("./packages/react-in-view/src/index.js")
+            "ReactVisibility": path.resolve("./packages/react-visibility/src/index.js")
         }
     },
     devServer: {
