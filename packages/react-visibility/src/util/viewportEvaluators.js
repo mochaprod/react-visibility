@@ -4,15 +4,26 @@ import { viewportHeight, viewportWidth } from "./viewport";
  * Factory for a function that evaluates a DOM element's position
  * in the viewport.
  */
-const createViewportEvaluator = (viewportDimension, upperValue, lowerValue) =>
-    element => {
+const createViewportEvaluator = (
+    viewportDimension,
+    upperValue,
+    lowerValue
+) =>
+    (
+        element,
+        offsets = {
+            upper: 0,
+            lower: 0
+        }
+    ) => {
         if (!element) {
             return false;
         }
 
+        const { upper: up, lower: low } = offsets;
         const rect = element.getBoundingClientRect();
-        const upper = rect[upperValue];
-        const lower = rect[lowerValue];
+        const upper = rect[upperValue] - up;
+        const lower = rect[lowerValue] + low;
         const latestViewportDimension = viewportDimension();
 
         const inView = (upper >= 0 || lower >= 0) &&
