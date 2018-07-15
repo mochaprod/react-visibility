@@ -1,15 +1,15 @@
-# react-in-view
+# React Visibility
 
 React components for tracking DOM elements in the viewport.
 
 ## Install
 
 ```sh
-npm install react-in-view
+npm install react-visibility
 ```
 
 ```javascript
-import { InView, withInView } from "react-in-view";
+import { InView, withInView } from "react-visibility";
 ```
 
 ## Usage
@@ -20,7 +20,7 @@ For all component guides, visit the **docs**.
 
 ```jsx
 import React from "react";
-import { InView } from "react-in-view";
+import { InView } from "react-visibility";
 
 const MyComponent = props => (
     <InView>
