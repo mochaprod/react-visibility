@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import domExists from "../util/env";
 
 import {
     inViewportWidth as isInViewportWidth,
@@ -39,7 +40,10 @@ class InView extends React.Component {
         // event. When the event is fired, a re-calculation of the tracked
         // element's position in the DOM is made and `state` is updated
         // accordingly.
-        activeElement: PropTypes.instanceOf(Element),
+        activeElement: PropTypes.oneOf([
+            PropTypes.instanceOf(Element),
+            null
+        ]),
 
         // The event to bind to `props.activeElement`.
         event: PropTypes.string,
@@ -56,7 +60,7 @@ class InView extends React.Component {
         onViewExit: null,
         onFirstViewEnter: null,
         onViewFullyEnter: null,
-        activeElement: window,
+        activeElement: domExists() ? window : null,
         event: "scroll",
         exposeState: null
     };
@@ -88,8 +92,11 @@ class InView extends React.Component {
         this.trackingThis = element;
     };
 
-    track = () =>
-        requestAnimationFrame(this.recalculate);
+    track = () => {
+        if (domExists()) {
+            requestAnimationFrame(this.recalculate);
+        }
+    };
 
     /**
      * Diffs old DOM element state with the current after `scroll` event
@@ -175,14 +182,14 @@ class InView extends React.Component {
             throw new Error("<InView> mounted without a ref to a DOM element.");
         }
 
-        if (activeElement && activeElement.addEventListener) {
+        if (domExists() && activeElement && activeElement.addEventListener) {
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
-        }
 
-        // Populate initial state on mount.
-        this.recalculate();
+            // Populate initial state on mount.
+            this.recalculate();
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
