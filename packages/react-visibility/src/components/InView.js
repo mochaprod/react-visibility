@@ -40,10 +40,15 @@ class InView extends React.Component {
         // event. When the event is fired, a re-calculation of the tracked
         // element's position in the DOM is made and `state` is updated
         // accordingly.
-        activeElement: PropTypes.oneOf([
-            PropTypes.instanceOf(Element),
-            null
-        ]),
+        //
+        // If environment does not have the `window` object, use falsey value,
+        // in a server-side rendered component.
+        activeElement: domExists()
+            ? PropTypes.oneOfType([
+                PropTypes.instanceOf(Element),
+                PropTypes.exact(window)
+            ])
+            : PropTypes.exact(null),
 
         // The event to bind to `props.activeElement`.
         event: PropTypes.string,
@@ -103,7 +108,7 @@ class InView extends React.Component {
      * is fired.
      */
     recalculate = () => {
-        if (!this.trackingThis) {
+        if (!domExists() || !this.trackingThis) {
             return;
         }
 
