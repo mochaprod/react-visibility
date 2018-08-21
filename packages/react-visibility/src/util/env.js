@@ -1,3 +1,9 @@
-const domExists = () => window;
+const __DEV__ = process.env.NODE_ENV !== "production";
 
-export default domExists;
+const canUseDOM = !!(
+    window &&
+    Element &&
+    window.requestAnimationFrame
+);
+
+export { __DEV__, canUseDOM };

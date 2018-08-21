@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import domExists from "../util/env";
+import { canUseDOM } from "../util/env";
 
 import {
     inViewportWidth as isInViewportWidth,
@@ -43,7 +43,7 @@ class InView extends React.Component {
         //
         // If environment does not have the `window` object, use falsey value,
         // in a server-side rendered component.
-        activeElement: domExists()
+        activeElement: canUseDOM
             ? PropTypes.oneOfType([
                 PropTypes.instanceOf(Element),
                 PropTypes.exact(window)
@@ -65,7 +65,7 @@ class InView extends React.Component {
         onViewExit: null,
         onFirstViewEnter: null,
         onViewFullyEnter: null,
-        activeElement: domExists() ? window : null,
+        activeElement: canUseDOM ? window : null,
         event: "scroll",
         exposeState: null
     };
@@ -98,7 +98,7 @@ class InView extends React.Component {
     };
 
     track = () => {
-        if (domExists()) {
+        if (canUseDOM) {
             requestAnimationFrame(this.recalculate);
         }
     };
@@ -108,7 +108,7 @@ class InView extends React.Component {
      * is fired.
      */
     recalculate = () => {
-        if (!domExists() || !this.trackingThis) {
+        if (!canUseDOM || !this.trackingThis) {
             return;
         }
 
@@ -187,7 +187,7 @@ class InView extends React.Component {
             throw new Error("<InView> mounted without a ref to a DOM element.");
         }
 
-        if (domExists() && activeElement && activeElement.addEventListener) {
+        if (canUseDOM && activeElement && activeElement.addEventListener) {
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
