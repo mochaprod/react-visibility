@@ -46,7 +46,7 @@ class InView extends React.Component {
         activeElement: canUseDOM
             ? PropTypes.oneOfType([
                 PropTypes.instanceOf(Element),
-                PropTypes.exact(window)
+                PropTypes.oneOf([window])
             ])
             : PropTypes.exact(null),
 
