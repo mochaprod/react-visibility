@@ -40,7 +40,7 @@ class WindowScroll extends React.Component {
 
     render() {
         const { children } = this.props;
-        return children(...this.state);
+        return children({ ...this.state });
     }
 }
 
