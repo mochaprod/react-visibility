@@ -9,7 +9,7 @@
     "build:umd": "npm run set:dev webpack",
     "build:umd:production": "npm run set:prod webpack",
     "build:commonjs": "BUILD_TYPE=commonjs2 npm run set:dev webpack",
-    "clean": "rm -rf dist/ && rm -rf packages/react-in-view/dist/ && rm -rf packages/docs/public/static/"
+    "clean": "rm -rf dist/ && rm -rf packages/react-visibility/dist/ && rm -rf packages/docs/public/static/"
   },
   "author": "Benjamin Huang",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.9.1",
     "html-webpack-plugin": "^3.2.0",
-    "node-sass": "^4.9.1",
+    "node-sass": "^4.9.2",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
