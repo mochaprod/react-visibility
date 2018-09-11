@@ -2,14 +2,14 @@ import React from "react";
 
 import PoolerContext from "./Context";
 
-const withEventPooler = Component => props => (
+const withEventProvider = Component => props => (
     <PoolerContext.Consumer>
         { subscribe => (
             <Component
                 { ...props }
-                subscribeToPooler={ subscribe } />
+                subscribeToEventProvider={ subscribe } />
         ) }
     </PoolerContext.Consumer>
 );
 
-export default withEventPooler;
+export default withEventProvider;
