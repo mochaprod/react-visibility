@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { canUseDOM } from "../util/env";
+import { canUseDOM, DOCUMENT_ELEMENT } from "../util/env";
+import { pollScrollingState } from "../util/container";
 
 /**
  * Synchronizes `window`'s scroll properties with React `state`.
@@ -11,35 +12,25 @@ class WindowScroll extends React.Component {
         children: PropTypes.func.isRequired
     };
 
-    state = {
-        scrollX: canUseDOM
-            ? window.scrollX
-            : 0,
-        scrollY: canUseDOM
-            ? window.scrollY
-            : 0
-    };
+    state = pollScrollingState(DOCUMENT_ELEMENT);
 
-    scroll = () =>
-        this.setState({
-            scrollX: window.scrollX,
-            scrollY: window.scrollY
-        });
+    scroll = () => this.setState(pollScrollingState(DOCUMENT_ELEMENT));
 
     componentDidMount() {
         if (canUseDOM) {
-            document.addEventListener("scroll", this.scroll);
+            DOCUMENT_ELEMENT.addEventListener("scroll", this.scroll);
         }
     }
 
     componentWillUnmount() {
         if (canUseDOM) {
-            document.removeEventListener("scroll", this.scroll);
+            DOCUMENT_ELEMENT.removeEventListener("scroll", this.scroll);
         }
     }
 
     render() {
         const { children } = this.props;
+
         return children({ ...this.state });
     }
 }
