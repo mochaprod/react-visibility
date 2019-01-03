@@ -1,7 +1,7 @@
-const viewportHeight = () =>
-    window.innerHeight || document.documentElement.clientHeight;
+import { pollClientDimensions } from "./container";
 
-const viewportWidth = () =>
-    window.innerWidth || document.documentElement.clientWidth;
+const viewportHeight = () => pollClientDimensions().height;
+
+const viewportWidth = () => pollClientDimensions().width;
 
 export { viewportHeight, viewportWidth };
