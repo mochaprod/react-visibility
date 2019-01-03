@@ -1,8 +1,10 @@
 import React from "react";
-import { any, func, instanceOf } from "prop-types";
+import {
+    any, func, oneOf, oneOfType, instanceOf
+} from "prop-types";
 
-import { canUseDOM, DOCUMENT_ELEMENT } from "../../util/env";
-import { pollScrollingState } from "../../util/container";
+import { canUseDOM } from "../../util/env";
+import { getEventTarget, pollScrollingState } from "../../util/container";
 
 /* eslint react/destructuring-assignment:off */
 
@@ -10,22 +12,27 @@ class ScrollingState extends React.Component {
     static propTypes = {
         children: func.isRequired,
         container: canUseDOM
-            ? instanceOf(Element)
+            ? oneOfType([
+                instanceOf(Element),
+                oneOf([document])
+            ])
             : any
     };
 
     static defaultProps = {
-        container: DOCUMENT_ELEMENT
+        container: document
     };
 
     state = canUseDOM
-        ? pollScrollingState(this.props.container)
+        ? pollScrollingState(getEventTarget(this.props.container))
         : {};
 
     scroll = () => {
         const { container } = this.props;
 
-        this.setState(pollScrollingState(container));
+        this.setState(
+            pollScrollingState(getEventTarget(container))
+        );
     };
 
     componentDidMount() {

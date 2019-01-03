@@ -1,5 +1,9 @@
 import { canUseDOM, DOCUMENT_ELEMENT } from "./env";
 
+function getEventTarget(element) {
+    return element.documentElement || element;
+}
+
 function pollClientDimensions(element = DOCUMENT_ELEMENT) {
     // Includes element height and padding, no borders/margins!
     const {
@@ -59,6 +63,7 @@ function pollScrollingState(element = DOCUMENT_ELEMENT) {
 }
 
 export {
+    getEventTarget,
     pollClientDimensions,
     pollContainerScrollProperties,
     pollScrollingState

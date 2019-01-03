@@ -18,13 +18,13 @@ class WindowScroll extends React.Component {
 
     componentDidMount() {
         if (canUseDOM) {
-            DOCUMENT_ELEMENT.addEventListener("scroll", this.scroll);
+            document.addEventListener("scroll", this.scroll);
         }
     }
 
     componentWillUnmount() {
         if (canUseDOM) {
-            DOCUMENT_ELEMENT.removeEventListener("scroll", this.scroll);
+            document.removeEventListener("scroll", this.scroll);
         }
     }
 
