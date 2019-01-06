@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    any, func, oneOf, oneOfType, instanceOf
+    any, string, func, oneOf, oneOfType, arrayOf, instanceOf
 } from "prop-types";
 
 import { canUseDOM } from "../../util/env";
@@ -11,6 +11,10 @@ import { getEventTarget, pollScrollingState } from "../../util/container";
 class ScrollingState extends React.Component {
     static propTypes = {
         children: func.isRequired,
+        event: oneOfType([
+            string,
+            arrayOf(string)
+        ]),
         container: canUseDOM
             ? oneOfType([
                 instanceOf(Element),
@@ -20,6 +24,7 @@ class ScrollingState extends React.Component {
     };
 
     static defaultProps = {
+        event: "scroll",
         container: document
     };
 
@@ -35,19 +40,27 @@ class ScrollingState extends React.Component {
         );
     };
 
+    update = () => {
+        if (this.active) {
+            window.cancelAnimationFrame(this.scroll);
+        }
+
+        window.requestAnimationFrame(this.scroll);
+    };
+
     componentDidMount() {
         if (canUseDOM) {
-            const { container } = this.props;
+            const { event, container } = this.props;
 
-            container.addEventListener("scroll", this.scroll);
+            container.addEventListener(event, this.update);
         }
     }
 
     componentWillUnmount() {
         if (canUseDOM) {
-            const { container } = this.props;
+            const { event, container } = this.props;
 
-            container.removeEventListener("scroll", this.scroll);
+            container.removeEventListener(event, this.update);
         }
     }
 
