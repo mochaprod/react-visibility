@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-    extends: "aperopyl",
+    extends: "aperopyl-react",
     parser: "babel-eslint",
     rules: {},
     settings: {

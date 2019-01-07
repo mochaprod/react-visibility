@@ -1,9 +1,23 @@
 const __DEV__ = process.env.NODE_ENV !== "production";
 
+const DOCUMENT_ELEMENT = document.documentElement;
+
 const canUseDOM = !!(
-    window &&
-    Element &&
-    window.requestAnimationFrame
+    window
+    && window.document
+    && Element
+    && window.requestAnimationFrame
 );
 
-export { __DEV__, canUseDOM };
+/**
+ *
+ * @param {function} callback a callback function
+ */
+function createDOMGuard(callback) {
+}
+
+export {
+    __DEV__,
+    canUseDOM,
+    DOCUMENT_ELEMENT
+};

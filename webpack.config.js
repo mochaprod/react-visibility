@@ -10,8 +10,7 @@ const entryFile = "./packages/react-visibility/src/index.js";
 
 console.log(`Building in ${chalk.cyan(process.env.NODE_ENV)}...`);
 
-const getFileName = () =>
-    `react-visibility.${buildType}.${isProduction ? PRODUCTION : DEVELOPMENT}`;
+const getFileName = () => `react-visibility.${buildType}.${isProduction ? PRODUCTION : DEVELOPMENT}`;
 
 /* eslint-disable */
 module.exports = {
@@ -41,11 +40,7 @@ module.exports = {
                         loader: "babel-loader",
                         options: {
                             "presets": [
-                                "@babel/preset-env",
-                                "@babel/preset-react",
-                                ["@babel/preset-stage-2", {
-                                    "decoratorsLegacy": true
-                                }]
+                                "react-app"
                             ]
                         }
                     }
