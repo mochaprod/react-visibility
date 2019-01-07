@@ -1,4 +1,4 @@
-# react-visibility
+# React Visibility
 
 React components for tracking DOM elements in the viewport.
 
