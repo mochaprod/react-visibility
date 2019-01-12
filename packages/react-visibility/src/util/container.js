@@ -152,6 +152,8 @@ function getElementRect(element, container = window) {
     const bottom = parentHeight - offsetTop - offsetHeight;
 
     const result = {
+        width: offsetWidth,
+        height: offsetHeight,
         top: offsetTop,
         left: offsetLeft,
         bottom,
