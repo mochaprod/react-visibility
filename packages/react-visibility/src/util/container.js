@@ -125,6 +125,10 @@ function pollScrollingState(element = window) {
  * to its `offsetParent` container. If the container is `window`,
  * then simply `gBCR()` is used.
  *
+ * This function requires any container other than the `document`
+ * to have CSS `position: relative` and `overflow: scroll`. Ensure
+ * that there is also a fixed height.
+ *
  * @param {Element | HTMLElement} element an element
  * @param {Window | Element} container a container element
  */
@@ -144,23 +148,28 @@ function getElementRect(element, container = window) {
     } = element;
 
     const {
+        scrollTop,
+        scrollLeft
+    } = pollContainerScrollProperties(container);
+
+    const {
         width: parentWidth,
         height: parentHeight
     } = pollClientDimensions(parent);
 
-    const right = parentWidth - offsetLeft - offsetWidth;
-    const bottom = parentHeight - offsetTop - offsetHeight;
+    const top = offsetTop - scrollTop;
+    const left = offsetLeft - scrollLeft;
+    const bottom = parentHeight - top - offsetHeight;
+    const right = parentWidth - left - offsetWidth;
 
     const result = {
         width: offsetWidth,
         height: offsetHeight,
-        top: offsetTop,
-        left: offsetLeft,
+        top,
+        left,
         bottom,
         right
     };
-
-    console.log(result);
 
     return result;
 }
