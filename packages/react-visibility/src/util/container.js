@@ -188,8 +188,8 @@ function didReachMaxScroll(container) {
     } = pollContainerScrollProperties(container);
 
     return {
-        width: scrollLeft + width - scrollWidth < 1,
-        height: scrollTop + height - scrollHeight < 1
+        width: scrollWidth - scrollLeft - width < 1,
+        height: scrollHeight - scrollTop - height < 1
     };
 }
 
