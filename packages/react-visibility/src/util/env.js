@@ -9,15 +9,20 @@ const canUseDOM = !!(
     && window.requestAnimationFrame
 );
 
-/**
- *
- * @param {function} callback a callback function
- */
-function createDOMGuard(callback) {
+function noop() {
+    // Noop
+}
+
+function warn(test, message) {
+    if (__DEV__ && test) {
+        console.warn(message);
+    }
 }
 
 export {
     __DEV__,
     canUseDOM,
-    DOCUMENT_ELEMENT
+    DOCUMENT_ELEMENT,
+    noop,
+    warn
 };
