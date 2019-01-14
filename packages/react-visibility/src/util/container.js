@@ -174,15 +174,23 @@ function getElementRect(element, container = window) {
     return result;
 }
 
-/**
- * Computes how far an element is from the very top of its
- * `offsetParent`. If the container is `window` that would be
- * how far the element from the top of the `document`.
- *
- * @param {HTMLElement} element
- * @param {Window | HTMLElement} container
- */
-function getScrollDistance(element, container = window) {
+function didReachMaxScroll(container) {
+    const {
+        width,
+        height
+    } = getElementRect(container);
+
+    const {
+        scrollLeft,
+        scrollTop,
+        scrollWidth,
+        scrollHeight
+    } = pollContainerScrollProperties(container);
+
+    return {
+        width: scrollLeft + width - scrollWidth < 1,
+        height: scrollTop + height - scrollHeight < 1
+    };
 }
 
 export {
@@ -190,5 +198,6 @@ export {
     pollClientDimensions,
     pollContainerScrollProperties,
     pollScrollingState,
-    getElementRect
+    getElementRect,
+    didReachMaxScroll
 };
