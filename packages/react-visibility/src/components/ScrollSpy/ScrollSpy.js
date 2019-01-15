@@ -3,6 +3,11 @@ import { func, string } from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
+import { warn, assert } from "../../util/env";
+
+// TODO:
+// * server-side rendering
+// * add callback functions?
 
 class ScrollSpy extends React.Component {
     static propTypes = {
@@ -24,16 +29,27 @@ class ScrollSpy extends React.Component {
 
     getContainer = () => this.container || window;
 
+    ensureScrollComponentsExist = () => {
+        const { store } = this;
+
+        warn(
+            store.state.length,
+            "<ScrollSpy> mounted without any scroll-sensitive components (scroll children). Ensure that scroll children receive the 'attachRef' prop."
+        );
+    };
+
     attachContainer = ref => {
         this.container = ref;
     };
 
     attachRef = id => {
-        if (!id
-            || (typeof id !== "string"
-            && typeof id !== "number")) {
-            throw new Error(`The 'id' of a ref must be a string or a number. It is a ${typeof id}`);
-        }
+        assert(
+            id
+            && (typeof id !== "string"
+            || typeof id !== "number"),
+            `The 'id' argument called on 'attachRef' must be a string or a number. Received a '${typeof id}'.`,
+            true
+        );
 
         return innerRef => {
             this.store.updateState(prevState => {
@@ -55,6 +71,10 @@ class ScrollSpy extends React.Component {
     };
 
     calculate = () => {
+        if (!this.store.state.length) {
+            return;
+        }
+
         const { scroll } = this.props;
         const { active } = this.state;
 
@@ -85,8 +105,11 @@ class ScrollSpy extends React.Component {
     };
 
     componentDidMount() {
-        this.start();
+        // Ensure the component actually has elements to track!
+        this.ensureScrollComponentsExist();
 
+        // Let's go!
+        this.start();
         this.getContainer().addEventListener("scroll", this.start);
     }
 

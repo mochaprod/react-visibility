@@ -4,8 +4,13 @@ import { getElementRect, didReachMaxScroll } from "../../util/container";
 // component.
 
 /**
+ * Computes the distance the bottom/left edge of an element to the
+ * top/left edge of the viewport or a container element.
+ *
+ * Computes the distances for an array of elements.
+ *
  * @param {HTMLElement[]} elements
- * @param {*} container
+ * @param {Window | HTMLElement} container
  */
 function getScrollDistances(elements, container) {
     const distances = elements
@@ -30,6 +35,13 @@ function getScrollDistances(elements, container) {
     return distances;
 }
 
+/**
+ * Determines the active element among an array of `element`s.
+ *
+ * @param {HTMLElement[]} elements
+ * @param {Window | HTMLElement} container
+ * @param {boolean} height
+ */
 function spy(elements, container = window, height = true) {
     if (!elements) {
         return null;

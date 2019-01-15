@@ -14,8 +14,14 @@ function noop() {
 }
 
 function warn(test, message) {
-    if (__DEV__ && test) {
+    if (__DEV__ && !test) {
         console.warn(message);
+    }
+}
+
+function assert(test, message, force = false) {
+    if ((__DEV__ || force) && !test) {
+        throw new Error(message);
     }
 }
 
@@ -24,5 +30,6 @@ export {
     canUseDOM,
     DOCUMENT_ELEMENT,
     noop,
-    warn
+    warn,
+    assert
 };
