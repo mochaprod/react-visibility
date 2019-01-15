@@ -1,4 +1,4 @@
-import { getElementRect } from "../../util/container";
+import { getElementRect, didReachMaxScroll } from "../../util/container";
 
 // Contains functions that interface with the `ScrollSpy`
 // component.
@@ -35,8 +35,9 @@ function spy(elements, container = window, height = true) {
         return null;
     }
 
-    const distances = getScrollDistances(elements, container);
     const property = height ? "height" : "width";
+    const distances = getScrollDistances(elements, container);
+    const reachedMaxScroll = didReachMaxScroll(container)[property];
 
     const ascending = (a, b) => a[property] - b[property];
 
@@ -53,6 +54,10 @@ function spy(elements, container = window, height = true) {
 
     if (!notScrolled) {
         return scrolled[scrolled.length - 1];
+    }
+
+    if (reachedMaxScroll) {
+        return notScrolled[notScrolled.length - 1];
     }
 
     return notScrolled[0];
