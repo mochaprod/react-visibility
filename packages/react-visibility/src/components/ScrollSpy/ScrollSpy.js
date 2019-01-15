@@ -3,7 +3,7 @@ import { func, string } from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
-import { warn, assert } from "../../util/env";
+import { warn, assert, noop } from "../../util/env";
 
 // TODO:
 // * server-side rendering
@@ -12,11 +12,13 @@ import { warn, assert } from "../../util/env";
 class ScrollSpy extends React.Component {
     static propTypes = {
         children: func.isRequired,
-        scroll: string
+        scroll: string,
+        onChange: func
     };
 
     static defaultProps = {
-        scroll: "height"
+        scroll: "height",
+        onChange: noop
     };
 
     state = {
@@ -27,9 +29,9 @@ class ScrollSpy extends React.Component {
     // the scroll-spy code.
     store = new Store([]);
 
-    getContainer = () => this.container || window;
+    _getContainer = () => this.container || window;
 
-    ensureScrollComponentsExist = () => {
+    _ensureScrollComponentsExist = () => {
         const { store } = this;
 
         warn(
@@ -38,10 +40,26 @@ class ScrollSpy extends React.Component {
         );
     };
 
+    _callOnChange = () => {
+        const { onChange } = this.props;
+        const { active: currentActive } = this.state;
+
+        if (typeof onChange === "function") {
+            onChange(currentActive);
+        }
+    };
+
     attachContainer = ref => {
         this.container = ref;
     };
 
+    /**
+     * Used on DOM components to attach them to `<ScrollSpy>`.
+     * Usage:
+     *  <div
+     *      ref={ attachRef("unique_id") }
+     *  />
+     */
     attachRef = id => {
         assert(
             id
@@ -52,7 +70,21 @@ class ScrollSpy extends React.Component {
         );
 
         return innerRef => {
+            const { store } = this;
+
+            if (store === null) {
+                // The component unmounted, ignore this function call.
+
+                return;
+            }
+
+            // If `innerRef` already exists, ignore the function call.
+            if (store.state.find(({ ref }) => ref === innerRef)) {
+                return;
+            }
+
             this.store.updateState(prevState => {
+                // Filter out DOM refs that have been unmounted by React.
                 const nextState = prevState.filter(({ ref }) => ref.parentNode);
 
                 if (innerRef === null) {
@@ -80,7 +112,7 @@ class ScrollSpy extends React.Component {
 
         const { id } = spy(
             this.store.state,
-            this.getContainer(),
+            this._getContainer(),
             scroll === "height"
         );
 
@@ -91,9 +123,10 @@ class ScrollSpy extends React.Component {
             return;
         }
 
-        this.setState({
-            active: id
-        });
+        this.setState(
+            { active: id },
+            this._callOnChange
+        );
     };
 
     start = () => {
@@ -106,11 +139,11 @@ class ScrollSpy extends React.Component {
 
     componentDidMount() {
         // Ensure the component actually has elements to track!
-        this.ensureScrollComponentsExist();
+        this._ensureScrollComponentsExist();
 
-        // Let's go!
+        // Bootstrap scrolling
         this.start();
-        this.getContainer().addEventListener("scroll", this.start);
+        this._getContainer().addEventListener("scroll", this.start);
     }
 
     componentWillUnmount() {
@@ -118,7 +151,7 @@ class ScrollSpy extends React.Component {
         this.store.deallocate();
         this.store = null;
 
-        this.getContainer().removeEventListener("scroll", this.start);
+        this._getContainer().removeEventListener("scroll", this.start);
     }
 
     render() {
