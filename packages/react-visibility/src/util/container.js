@@ -178,7 +178,7 @@ function didReachMaxScroll(container) {
     const {
         width,
         height
-    } = getElementRect(container);
+    } = pollClientDimensions(container, false);
 
     const {
         scrollLeft,
