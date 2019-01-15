@@ -3,7 +3,6 @@ import { func, string } from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
-import { noop } from "../../util/env";
 
 class ScrollSpy extends React.Component {
     static propTypes = {
@@ -23,15 +22,17 @@ class ScrollSpy extends React.Component {
     // the scroll-spy code.
     store = new Store([]);
 
+    getContainer = () => this.container || window;
+
     attachContainer = ref => {
         this.container = ref;
     };
 
     attachRef = id => {
         if (!id
-            || typeof id !== "string"
-            || typeof id !== "number") {
-            throw new Error("The 'id' of a ref must be a string or a number.");
+            || (typeof id !== "string"
+            && typeof id !== "number")) {
+            throw new Error(`The 'id' of a ref must be a string or a number. It is a ${typeof id}`);
         }
 
         return innerRef => {
@@ -55,22 +56,38 @@ class ScrollSpy extends React.Component {
 
     calculate = () => {
         const { scroll } = this.props;
+        const { active } = this.state;
 
-        const active = spy(
+        const { id } = spy(
             this.store.state,
-            this.container || window,
+            this.getContainer(),
             scroll === "height"
         );
 
+        if (active === id) {
+            // Don't update `state` if the active element
+            // didn't change.
+
+            return;
+        }
+
         this.setState({
-            active
+            active: id
         });
     };
 
-    componentDidMount() {
-        this.calculate();
+    start = () => {
+        if (this.scrolling) {
+            window.cancelAnimationFrame(this.scrolling);
+        }
 
-        this.container.addEventListener("scroll", this.calculate);
+        this.scrolling = window.requestAnimationFrame(this.calculate);
+    };
+
+    componentDidMount() {
+        this.start();
+
+        this.getContainer().addEventListener("scroll", this.start);
     }
 
     componentWillUnmount() {
@@ -78,7 +95,7 @@ class ScrollSpy extends React.Component {
         this.store.deallocate();
         this.store = null;
 
-        this.container.removeEventListener("scroll", this.calculate);
+        this.getContainer().removeEventListener("scroll", this.start);
     }
 
     render() {
