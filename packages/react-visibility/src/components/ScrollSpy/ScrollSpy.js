@@ -1,23 +1,23 @@
 import React from "react";
-import { func, string } from "prop-types";
+import { number, func, string } from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
-import { warn, assert, noop } from "../../util/env";
-
-// TODO:
-// * server-side rendering
-// * add callback functions?
+import {
+    canUseDOM, warn, assert, noop
+} from "../../util/env";
 
 class ScrollSpy extends React.Component {
     static propTypes = {
         children: func.isRequired,
         scroll: string,
+        offset: number,
         onChange: func
     };
 
     static defaultProps = {
         scroll: "height",
+        offset: 0,
         onChange: noop
     };
 
@@ -62,9 +62,8 @@ class ScrollSpy extends React.Component {
      */
     attachRef = id => {
         assert(
-            id
-            && (typeof id !== "string"
-            || typeof id !== "number"),
+            typeof id === "string"
+            || typeof id === "number",
             `The 'id' argument called on 'attachRef' must be a string or a number. Received a '${typeof id}'.`,
             true
         );
@@ -107,13 +106,14 @@ class ScrollSpy extends React.Component {
             return;
         }
 
-        const { scroll } = this.props;
+        const { scroll, offset } = this.props;
         const { active } = this.state;
 
         const { id } = spy(
             this.store.state,
             this._getContainer(),
-            scroll === "height"
+            scroll === "height",
+            offset
         );
 
         if (active === id) {

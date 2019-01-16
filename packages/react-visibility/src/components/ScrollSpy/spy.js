@@ -12,7 +12,12 @@ import { getElementRect, didReachMaxScroll } from "../../util/container";
  * @param {HTMLElement[]} elements
  * @param {Window | HTMLElement} container
  */
-function getScrollDistances(elements, container) {
+function getScrollDistances(
+    elements,
+    container,
+    widthOffset,
+    heightOffset
+) {
     const distances = elements
         .map(({ id, ref }) => {
             // `id` is a string or a number that uniquely identifies
@@ -27,8 +32,8 @@ function getScrollDistances(elements, container) {
 
             return {
                 id,
-                width: left + width,
-                height: top + height
+                width: left + width + widthOffset,
+                height: top + height + heightOffset
             };
         });
 
@@ -42,13 +47,18 @@ function getScrollDistances(elements, container) {
  * @param {Window | HTMLElement} container
  * @param {boolean} height
  */
-function spy(elements, container = window, height = true) {
-    if (!elements) {
+function spy(
+    elements,
+    container = window,
+    height = true,
+    offset = 0
+) {
+    if (!elements || !elements.length) {
         return null;
     }
 
     const property = height ? "height" : "width";
-    const distances = getScrollDistances(elements, container);
+    const distances = getScrollDistances(elements, container, offset, offset);
     const reachedMaxScroll = didReachMaxScroll(container)[property];
 
     const ascending = (a, b) => a[property] - b[property];
