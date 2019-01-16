@@ -11,13 +11,13 @@ const PUBLIC_PATH = path.resolve("./", "packages", "docs", "public");
 /* eslint-disable */
 module.exports = {
     mode: isProduction ? PRODUCTION : DEVELOPMENT,
-    devtool: isProduction ? undefined : "inline-source-map",
+    devtool: isProduction ? undefined : "source-map",
     externals: {
         "react": "React",
         "react-dom": "ReactDOM",
         "react-visibility": "ReactVisibility"
     },
-    entry: "./packages/docs/src/App.js",
+    entry: "./packages/docs/src/index.js",
     output: {
         filename: "docs.client.js",
         path: path.resolve("./", "dist", "docs")
@@ -74,6 +74,7 @@ module.exports = {
         hot: true,
         compress: true,
         contentBase: PUBLIC_PATH,
+        historyApiFallback: true,
         host: "0.0.0.0"
     }
 };
