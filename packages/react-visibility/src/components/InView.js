@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { canUseDOM } from "../util/env";
 
 import {
     inViewportWidth as isInViewportWidth,
@@ -13,6 +14,13 @@ import mapStateToCallbacks from "../util/mapStateToCallbacks";
 class InView extends React.Component {
     static propTypes = {
         children: PropTypes.func.isRequired,
+
+        // Offsets can any number to shrink or increase the
+        // size of the ref'd DOM node's rect.
+        topOffset: PropTypes.number,
+        bottomOffset: PropTypes.number,
+        leftOffset: PropTypes.number,
+        rightOffset: PropTypes.number,
 
         // Called when the ref'd DOM node enters the viewport
         // ...or, a state change of `inView` from `false` -> `true`
@@ -32,7 +40,15 @@ class InView extends React.Component {
         // event. When the event is fired, a re-calculation of the tracked
         // element's position in the DOM is made and `state` is updated
         // accordingly.
-        activeElement: PropTypes.instanceOf(Element),
+        //
+        // If environment does not have the `window` object, use falsey value,
+        // in a server-side rendered component.
+        activeElement: canUseDOM
+            ? PropTypes.oneOfType([
+                PropTypes.instanceOf(Element),
+                PropTypes.oneOf([window])
+            ])
+            : PropTypes.exact(null),
 
         // The event to bind to `props.activeElement`.
         event: PropTypes.string,
@@ -41,11 +57,15 @@ class InView extends React.Component {
     };
 
     static defaultProps = {
+        topOffset: 0,
+        bottomOffset: 0,
+        leftOffset: 0,
+        rightOffset: 0,
         onViewEnter: null,
         onViewExit: null,
         onFirstViewEnter: null,
         onViewFullyEnter: null,
-        activeElement: window,
+        activeElement: canUseDOM ? window : null,
         event: "scroll",
         exposeState: null
     };
@@ -77,17 +97,24 @@ class InView extends React.Component {
         this.trackingThis = element;
     };
 
-    track = () =>
-        requestAnimationFrame(this.recalculate);
+    track = () => {
+        if (canUseDOM) {
+            requestAnimationFrame(this.recalculate);
+        }
+    };
 
     /**
      * Diffs old DOM element state with the current after `scroll` event
      * is fired.
      */
     recalculate = () => {
-        if (!this.trackingThis) {
+        if (!canUseDOM || !this.trackingThis) {
             return;
         }
+
+        const {
+            topOffset, bottomOffset, leftOffset, rightOffset
+        } = this.props;
 
         /**
          * @type {Element}
@@ -96,11 +123,17 @@ class InView extends React.Component {
         const {
             inView: inHeight,
             completelyInView: inHeightFully
-        } = isInViewportHeight(trackedElement);
+        } = isInViewportHeight(trackedElement, {
+            upper: topOffset,
+            lower: bottomOffset
+        });
         const {
             inView: inWidth,
             completelyInView: inWidthFully
-        } = isInViewportWidth(trackedElement);
+        } = isInViewportWidth(trackedElement, {
+            upper: leftOffset,
+            lower: rightOffset
+        });
 
         const nextInView = inHeight && inWidth;
         const nextCompletelyInView = inHeightFully && inWidthFully;
@@ -154,14 +187,14 @@ class InView extends React.Component {
             throw new Error("<InView> mounted without a ref to a DOM element.");
         }
 
-        if (activeElement && activeElement.addEventListener) {
+        if (canUseDOM && activeElement && activeElement.addEventListener) {
             this.activeListener = true;
 
             activeElement.addEventListener(event, this.track);
-        }
 
-        // Populate initial state on mount.
-        this.recalculate();
+            // Populate initial state on mount.
+            this.recalculate();
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
