@@ -71,7 +71,7 @@ function pollContainerScrollProperties(element = window) {
             ),
             scrollHeight: Math.max(
                 document.body.scrollHeight,
-                DOCUMENT_ELEMENT.scrollWidth
+                DOCUMENT_ELEMENT.scrollHeight
             )
         };
     }
