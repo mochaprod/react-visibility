@@ -1,5 +1,5 @@
 import React from "react";
-import { InView } from "ReactVisibility";
+import { InView } from "../../../../react-visibility/src";
 
 import Container from "./Container";
 import Box from "./Box";
@@ -16,6 +16,13 @@ class Test extends React.Component {
         enteredView: false
     };
 
+    offsets = {
+        left: 100,
+        right: 100,
+        bottom: 0,
+        top: -100
+    };
+
     viewportEnter = () => {
         console.log("Entered viewport!");
     };
@@ -28,22 +35,33 @@ class Test extends React.Component {
         console.log("Entered viewport for the first time!");
     };
 
-    expose = state =>
+    expose = state => {
         this.setState({
             ...state
         });
+    };
 
     render() {
         return (
             <Container>
-                <Status {...this.state} />
+                <Status { ...this.state } />
                 <InView
-                    onViewEnter={this.viewportEnter}
-                    onViewExit={this.viewportExit}
-                    onFirstViewEnter={this.viewportFirstEntry}
-                    exposeState={this.expose}>
+                    leftOffset={ this.offsets.left }
+                    rightOffset={ this.offsets.right }
+                    topOffset={ this.offsets.top }
+                    bottomOffset={ this.offsets.bottom }
+                    onViewEnter={ this.viewportEnter }
+                    onViewExit={ this.viewportExit }
+                    onFirstViewEnter={ this.viewportFirstEntry }
+                    exposeState={ this.expose }
+                >
                     { ({ ref }, prevState) => (
-                        <Box passRef={ref}>
+                        <Box
+                            offsets={this.offsets}
+                            passRef={ref}
+                            top={1500}
+                            left={1500}
+                        >
                             <div>Box content; previous state:</div>
                             <pre>
                                 { JSON.stringify(prevState, null, 4) }
