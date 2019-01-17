@@ -20,7 +20,7 @@ For all component guides, visit the **docs**.
 
 ```jsx
 import React from "react";
-import { InView } from "react-visibiity";
+import { InView } from "react-visibility";
 
 const MyComponent = props => (
     <InView>

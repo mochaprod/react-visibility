@@ -1,10 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 
-import Test from "./components/demo/Test";
+import Router from "./components/Router/Router";
+
 import "./App.scss";
 
-ReactDOM.render(
-    <Test />,
-    document.getElementById("root")
+const App = () => (
+    <BrowserRouter>
+        <Router />
+    </BrowserRouter>
 );
+
+
+export default App;
