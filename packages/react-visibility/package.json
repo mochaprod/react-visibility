@@ -1,6 +1,6 @@
 {
   "name": "react-visibility",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "React components for tracking DOM element visibility",
   "main": "./dist/react-visibility.commonjs2.development.js",
   "keywords": [
