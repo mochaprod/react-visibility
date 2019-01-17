@@ -13,9 +13,6 @@ module.exports = {
     mode: isProduction ? PRODUCTION : DEVELOPMENT,
     devtool: isProduction ? undefined : "source-map",
     externals: {
-        "react": "React",
-        "react-dom": "ReactDOM",
-        "react-visibility": "ReactVisibility"
     },
     entry: "./packages/docs/src/index.js",
     output: {
