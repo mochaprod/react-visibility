@@ -19,7 +19,7 @@ function getScrollDistances(
     heightOffset
 ) {
     const distances = elements
-        .map(({ id, ref }) => {
+        .map(({ id, ref, callback }) => {
             // `id` is a string or a number that uniquely identifies
             // an element being tracked.
             // `ref` is a reference to a DOM element given by React.
@@ -32,6 +32,8 @@ function getScrollDistances(
 
             return {
                 id,
+                callback,
+                element: ref,
                 width: left + width + widthOffset,
                 height: top + height + heightOffset
             };

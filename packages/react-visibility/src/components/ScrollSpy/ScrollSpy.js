@@ -4,7 +4,7 @@ import { number, func, string } from "prop-types";
 import spy from "./spy";
 import Store from "../../util/Store";
 import {
-    canUseDOM, warn, assert, noop
+    warn, assert, noop
 } from "../../util/env";
 
 class ScrollSpy extends React.Component {
@@ -22,7 +22,8 @@ class ScrollSpy extends React.Component {
     };
 
     state = {
-        active: null
+        active: null,
+        element: null
     };
 
     // The store holds the elements that being watched by
@@ -40,12 +41,16 @@ class ScrollSpy extends React.Component {
         );
     };
 
+    /**
+     * Returns a function that when called, the `onChange` prop is called
+     * as a function. If an argument is provided, it is also called.
+     */
     _callOnChange = () => {
         const { onChange } = this.props;
-        const { active: currentActive } = this.state;
+        const { active: currentActive, element } = this.state;
 
         if (typeof onChange === "function") {
-            onChange(currentActive);
+            onChange(currentActive, element);
         }
     };
 
@@ -109,7 +114,7 @@ class ScrollSpy extends React.Component {
         const { scroll, offset } = this.props;
         const { active } = this.state;
 
-        const { id } = spy(
+        const { id, element } = spy(
             this.store.state,
             this._getContainer(),
             scroll === "height",
@@ -124,7 +129,10 @@ class ScrollSpy extends React.Component {
         }
 
         this.setState(
-            { active: id },
+            {
+                active: id,
+                element
+            },
             this._callOnChange
         );
     };
