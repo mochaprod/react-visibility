@@ -64,6 +64,9 @@ class ScrollSpy extends React.Component {
      *  <div
      *      ref={ attachRef("unique_id") }
      *  />
+     *
+     * The `ref` prop is called when a component updates and after
+     * `cWUm()` by React.
      */
     attachRef = id => {
         assert(
@@ -106,7 +109,11 @@ class ScrollSpy extends React.Component {
         };
     };
 
-    calculate = () => {
+    _forceSpyUpdate = (doCallOnChange = true) => {
+        this._calculate(doCallOnChange);
+    };
+
+    _calculate = (callOnChange = true) => {
         if (!this.store.state.length) {
             return;
         }
@@ -133,16 +140,23 @@ class ScrollSpy extends React.Component {
                 active: id,
                 element
             },
-            this._callOnChange
+            callOnChange
+                ? this._callOnChange
+                : noop
         );
     };
 
-    start = () => {
+    /**
+     * For the `this._start()` method.
+     */
+    _alwaysUpdate = () => this._callOnChange(true);
+
+    _start = () => {
         if (this.scrolling) {
             window.cancelAnimationFrame(this.scrolling);
         }
 
-        this.scrolling = window.requestAnimationFrame(this.calculate);
+        this.scrolling = window.requestAnimationFrame(this._alwaysUpdate);
     };
 
     componentDidMount() {
@@ -150,8 +164,8 @@ class ScrollSpy extends React.Component {
         this._ensureScrollComponentsExist();
 
         // Bootstrap scrolling
-        this.start();
-        this._getContainer().addEventListener("scroll", this.start);
+        this._start();
+        this._getContainer().addEventListener("scroll", this._start);
     }
 
     componentWillUnmount() {
@@ -159,7 +173,7 @@ class ScrollSpy extends React.Component {
         this.store.deallocate();
         this.store = null;
 
-        this._getContainer().removeEventListener("scroll", this.start);
+        this._getContainer().removeEventListener("scroll", this._start);
     }
 
     render() {
@@ -169,6 +183,7 @@ class ScrollSpy extends React.Component {
         return children({
             spyRef: this.attachContainer,
             attachRef: this.attachRef,
+            forceUpdate: this._forceSpyUpdate,
             active
         });
     }
