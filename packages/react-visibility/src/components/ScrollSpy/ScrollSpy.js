@@ -149,7 +149,7 @@ class ScrollSpy extends React.Component {
     /**
      * For the `this._start()` method.
      */
-    _alwaysUpdate = () => this._callOnChange(true);
+    _alwaysUpdate = () => this._calculate(true);
 
     _start = () => {
         if (this.scrolling) {
