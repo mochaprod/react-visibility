@@ -67,8 +67,11 @@ class ScrollSpy extends React.Component {
      *
      * The `ref` prop is called when a component updates and after
      * `cWUm()` by React.
+     *
+     * Users can pass a second argument, `externalRef` to directly receive
+     * the element corresponding to the React element.
      */
-    attachRef = id => {
+    attachRef = (id, externalRef) => {
         assert(
             typeof id === "string"
             || typeof id === "number",
@@ -106,6 +109,10 @@ class ScrollSpy extends React.Component {
                     }
                 ];
             });
+
+            if (typeof externalRef === "function") {
+                externalRef(innerRef);
+            }
         };
     };
 
