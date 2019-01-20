@@ -185,13 +185,14 @@ class ScrollSpy extends React.Component {
 
     render() {
         const { children } = this.props;
-        const { active } = this.state;
+        const { active, element } = this.state;
 
         return children({
             spyRef: this.attachContainer,
             attachRef: this.attachRef,
             forceUpdate: this._forceSpyUpdate,
-            active
+            active,
+            element
         });
     }
 }
