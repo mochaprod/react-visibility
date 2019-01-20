@@ -76,7 +76,7 @@ function spy(
         .filter(distance => distance[property] < 0)
         .sort(ascending);
 
-    if (!notScrolled) {
+    if (!notScrolled.length) {
         return scrolled[scrolled.length - 1];
     }
 
