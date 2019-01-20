@@ -1,7 +1,5 @@
 import React from "react";
-import {
-    bool, number, string, func, node, oneOfType
-} from "prop-types";
+import PropTypes from "prop-types";
 
 import { noop } from "../../util/env";
 
@@ -59,12 +57,12 @@ const SpyGroup = ({
 );
 
 SpyGroup.propTypes = {
-    children: node.isRequired,
-    component: oneOfType([string, func]),
-    doSpyOn: bool,
-    scroll: string,
-    offset: number,
-    onChange: func
+    children: PropTypes.node.isRequired,
+    component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    doSpyOn: PropTypes.bool,
+    scroll: PropTypes.string,
+    offset: PropTypes.number,
+    onChange: PropTypes.func
 };
 
 SpyGroup.defaultProps = {

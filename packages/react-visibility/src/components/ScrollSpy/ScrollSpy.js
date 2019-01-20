@@ -1,5 +1,5 @@
 import React from "react";
-import { number, func, string } from "prop-types";
+import PropTypes from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
@@ -9,10 +9,10 @@ import {
 
 class ScrollSpy extends React.Component {
     static propTypes = {
-        children: func.isRequired,
-        scroll: string,
-        offset: number,
-        onChange: func
+        children: PropTypes.func.isRequired,
+        scroll: PropTypes.string,
+        offset: PropTypes.number,
+        onChange: PropTypes.func
     };
 
     static defaultProps = {
