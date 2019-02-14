@@ -1,7 +1,5 @@
 import React from "react";
-import {
-    any, string, func, oneOf, oneOfType, arrayOf, instanceOf
-} from "prop-types";
+import PropTypes from "prop-types";
 
 import { canUseDOM } from "../../util/env";
 import { getEventTarget, pollScrollingState } from "../../util/container";
@@ -10,17 +8,17 @@ import { getEventTarget, pollScrollingState } from "../../util/container";
 
 class ScrollingState extends React.Component {
     static propTypes = {
-        children: func.isRequired,
-        event: oneOfType([
-            string,
-            arrayOf(string)
+        children: PropTypes.func.isRequired,
+        event: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.string)
         ]),
         container: canUseDOM
-            ? oneOfType([
-                instanceOf(Element),
-                oneOf([document])
+            ? PropTypes.oneOfType([
+                PropTypes.instanceOf(Element),
+                PropTypes.oneOf([document])
             ])
-            : any
+            : PropTypes.any
     };
 
     static defaultProps = {

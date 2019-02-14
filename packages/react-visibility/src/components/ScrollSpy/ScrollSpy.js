@@ -1,18 +1,18 @@
 import React from "react";
-import { number, func, string } from "prop-types";
+import PropTypes from "prop-types";
 
 import spy from "./spy";
 import Store from "../../util/Store";
 import {
-    canUseDOM, warn, assert, noop
+    warn, assert, noop
 } from "../../util/env";
 
 class ScrollSpy extends React.Component {
     static propTypes = {
-        children: func.isRequired,
-        scroll: string,
-        offset: number,
-        onChange: func
+        children: PropTypes.func.isRequired,
+        scroll: PropTypes.string,
+        offset: PropTypes.number,
+        onChange: PropTypes.func
     };
 
     static defaultProps = {
@@ -22,7 +22,8 @@ class ScrollSpy extends React.Component {
     };
 
     state = {
-        active: null
+        active: null,
+        element: null
     };
 
     // The store holds the elements that being watched by
@@ -40,12 +41,16 @@ class ScrollSpy extends React.Component {
         );
     };
 
+    /**
+     * Returns a function that when called, the `onChange` prop is called
+     * as a function. If an argument is provided, it is also called.
+     */
     _callOnChange = () => {
         const { onChange } = this.props;
-        const { active: currentActive } = this.state;
+        const { active: currentActive, element } = this.state;
 
         if (typeof onChange === "function") {
-            onChange(currentActive);
+            onChange(currentActive, element);
         }
     };
 
@@ -59,8 +64,14 @@ class ScrollSpy extends React.Component {
      *  <div
      *      ref={ attachRef("unique_id") }
      *  />
+     *
+     * The `ref` prop is called when a component updates and after
+     * `cWUm()` by React.
+     *
+     * Users can pass a second argument, `externalRef` to directly receive
+     * the element corresponding to the React element.
      */
-    attachRef = id => {
+    attachRef = (id, externalRef) => {
         assert(
             typeof id === "string"
             || typeof id === "number",
@@ -98,10 +109,18 @@ class ScrollSpy extends React.Component {
                     }
                 ];
             });
+
+            if (typeof externalRef === "function") {
+                externalRef(innerRef);
+            }
         };
     };
 
-    calculate = () => {
+    _forceSpyUpdate = (doCallOnChange = true) => {
+        this._calculate(doCallOnChange);
+    };
+
+    _calculate = (callOnChange = true) => {
         if (!this.store.state.length) {
             return;
         }
@@ -109,7 +128,7 @@ class ScrollSpy extends React.Component {
         const { scroll, offset } = this.props;
         const { active } = this.state;
 
-        const { id } = spy(
+        const { id, element } = spy(
             this.store.state,
             this._getContainer(),
             scroll === "height",
@@ -124,17 +143,27 @@ class ScrollSpy extends React.Component {
         }
 
         this.setState(
-            { active: id },
-            this._callOnChange
+            {
+                active: id,
+                element
+            },
+            callOnChange
+                ? this._callOnChange
+                : noop
         );
     };
 
-    start = () => {
+    /**
+     * For the `this._start()` method.
+     */
+    _alwaysUpdate = () => this._calculate(true);
+
+    _start = () => {
         if (this.scrolling) {
             window.cancelAnimationFrame(this.scrolling);
         }
 
-        this.scrolling = window.requestAnimationFrame(this.calculate);
+        this.scrolling = window.requestAnimationFrame(this._alwaysUpdate);
     };
 
     componentDidMount() {
@@ -142,8 +171,8 @@ class ScrollSpy extends React.Component {
         this._ensureScrollComponentsExist();
 
         // Bootstrap scrolling
-        this.start();
-        this._getContainer().addEventListener("scroll", this.start);
+        this._start();
+        this._getContainer().addEventListener("scroll", this._start);
     }
 
     componentWillUnmount() {
@@ -151,17 +180,19 @@ class ScrollSpy extends React.Component {
         this.store.deallocate();
         this.store = null;
 
-        this._getContainer().removeEventListener("scroll", this.start);
+        this._getContainer().removeEventListener("scroll", this._start);
     }
 
     render() {
         const { children } = this.props;
-        const { active } = this.state;
+        const { active, element } = this.state;
 
         return children({
             spyRef: this.attachContainer,
             attachRef: this.attachRef,
-            active
+            forceUpdate: this._forceSpyUpdate,
+            active,
+            element
         });
     }
 }
