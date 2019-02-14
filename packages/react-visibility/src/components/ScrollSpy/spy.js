@@ -9,37 +9,33 @@ import { getElementRect, didReachMaxScroll } from "../../util/container";
  *
  * Computes the distances for an array of elements.
  *
- * @param {HTMLElement[]} elements
- * @param {Window | HTMLElement} container
+ * @param {HTMLElement} element an element
+ * @param {Window | HTMLElement} container a container
  */
-function getScrollDistances(
-    elements,
+function getScrollDistance(
+    element,
     container,
     widthOffset,
     heightOffset
 ) {
-    const distances = elements
-        .map(({ id, ref, callback }) => {
-            // `id` is a string or a number that uniquely identifies
-            // an element being tracked.
-            // `ref` is a reference to a DOM element given by React.
-            const {
-                top,
-                left,
-                width,
-                height
-            } = getElementRect(ref, container);
+    const { id, ref, callback } = element;
 
-            return {
-                id,
-                callback,
-                element: ref,
-                width: left + width + widthOffset,
-                height: top + height + heightOffset
-            };
-        });
+    const {
+        top,
+        left,
+        width,
+        height
+    } = getElementRect(
+        ref, container
+    );
 
-    return distances;
+    return {
+        id,
+        callback,
+        element: ref,
+        width: left + width + widthOffset,
+        height: top + height + heightOffset
+    };
 }
 
 /**
@@ -60,7 +56,9 @@ function spy(
     }
 
     const property = height ? "height" : "width";
-    const distances = getScrollDistances(elements, container, offset, offset);
+    const distances = elements.map(element => getScrollDistance(
+        element, container, offset, offset
+    ));
     const reachedMaxScroll = didReachMaxScroll(container)[property];
 
     const ascending = (a, b) => a[property] - b[property];
@@ -88,3 +86,6 @@ function spy(
 }
 
 export default spy;
+export {
+    getScrollDistance
+};
