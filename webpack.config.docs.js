@@ -22,7 +22,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
                 use: [
                     {
@@ -36,7 +36,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(sc|c)ss$/,
+                test: /\.s?css$/,
                 use: [
                     {
                         loader: "style-loader"
@@ -64,7 +64,7 @@ module.exports = {
     resolve: {
         alias: {
             // Use convenient alias to get most up-to-date source.
-            "ReactVisibility": path.resolve("./packages/react-visibility/src/index.js")
+            "react-visibility": path.resolve(__dirname, "packages", "react-visibility", "src")
         }
     },
     devServer: {
