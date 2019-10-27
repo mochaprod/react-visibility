@@ -4,6 +4,7 @@ const babel = require("rollup-plugin-babel");
 const commonjs = require("rollup-plugin-commonjs");
 const resolve = require("rollup-plugin-node-resolve");
 const { uglify } = require("rollup-plugin-uglify");
+const typescript = require("rollup-plugin-typescript2");
 
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
@@ -35,7 +36,7 @@ function createBuild(
     return {
         external: ["react"],
         input: path.resolve(
-            "./packages/react-visibility/src/index.js"
+            "./packages/react-visibility/src/index.ts"
         ),
         output: DESTINATIONS.map(destination => ({
             name: "ReactVisibility",
@@ -43,6 +44,7 @@ function createBuild(
             format: type
         })),
         plugins: [
+            typescript(),
             babel({
                 babelrc: false,
                 presets: ["react-app"],

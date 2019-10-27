@@ -1,9 +1,11 @@
 {
   "name": "react-visibility",
-  "version": "1.0.0-alpha.6",
+  "version": "2.0.0-alpha.1",
   "description": "React components for tracking DOM element visibility",
-  "main": "./dist/react-visibility.commonjs2.development.js",
+  "main": "./dist/react-visibility.cjs.development.js",
+  "lib": "./index.d.ts",
   "keywords": [
+    "scroll",
     "react",
     "dom",
     "visibility"

@@ -6,7 +6,7 @@ const DEVELOPMENT = "development";
 
 const isProduction = process.env.NODE_ENV === PRODUCTION;
 const buildType = process.env.BUILD_TYPE || "umd";
-const entryFile = "./packages/react-visibility/src/index.js";
+const entryFile = "./packages/react-visibility/src/index.ts";
 
 console.log(`Building in ${chalk.cyan(process.env.NODE_ENV)}...`);
 
@@ -20,8 +20,6 @@ module.exports = {
         "react": buildType === "umd" ? "React" : "react"
     },
     entry: {
-        [`./dist/${getFileName()}`]: entryFile,
-        [`./packages/docs/public/static/${getFileName()}`]: entryFile,
         [`./packages/react-visibility/dist/${getFileName()}`]: entryFile
     },
     output: {
@@ -44,6 +42,13 @@ module.exports = {
                             ]
                         }
                     }
+                ]
+            },
+            {
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    "ts-loader"
                 ]
             }
         ]
