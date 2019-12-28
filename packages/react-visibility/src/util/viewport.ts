@@ -1,4 +1,5 @@
-import { pollClientDimensions } from "./container";
+import { pollClientDimensions } from "./dom";
+import { ContainerElement } from "./env";
 
 // In these functions 'viewport` refers to the visible
 // area of an element. For `window`, that would be the literal
@@ -6,11 +7,11 @@ import { pollClientDimensions } from "./container";
 // content. For regular elements, the 'viewport' would be
 // `clientHeight` and `clientWidth`.
 
-const viewportHeight = (container) => pollClientDimensions(
+const viewportHeight = (container: ContainerElement) => pollClientDimensions(
     container
 ).height;
 
-const viewportWidth = (container) => pollClientDimensions(
+const viewportWidth = (container: ContainerElement) => pollClientDimensions(
     container
 ).width;
 

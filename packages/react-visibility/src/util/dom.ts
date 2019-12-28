@@ -1,4 +1,16 @@
-import { canUseDOM, DOCUMENT_ELEMENT } from "./env";
+import { canUseDOM, DOCUMENT_ELEMENT, ContainerElement } from "./env";
+
+export interface ClientDimensions {
+    width: number;
+    height: number;
+}
+
+export interface ScrollProperties {
+    scrollTop: number;
+    scrollLeft: number;
+    scrollWidth: number;
+    scrollHeight: number;
+}
 
 // If `container === window`, then use `window.pageYOffset`
 // otherwise, use `container.scrollTop`.
@@ -10,8 +22,33 @@ import { canUseDOM, DOCUMENT_ELEMENT } from "./env";
 // If `window`, use `getBoundingClientRect()`; or use
 // custom `offsetParent` method like `gBCR()`.
 
-function getEventTarget(element) {
+function getEventTarget(element: Element & Document) {
     return element.documentElement || element;
+}
+
+function windowDimensions() {
+    const dims: ClientDimensions = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+    };
+
+    return dims;
+}
+
+function elementDimensions(element?: Element | null): ClientDimensions {
+    if (!element) {
+        return windowDimensions();
+    }
+
+    const {
+        clientHeight,
+        clientWidth,
+    } = element;
+
+    return {
+        width: clientWidth,
+        height: clientHeight,
+    };
 }
 
 /**
@@ -19,15 +56,14 @@ function getEventTarget(element) {
  * that excludes scrollbars and borders.
  * Uses the `clientWidth` and `clientHeight` dimensions.
  *
- * @param {window | HTMLElement} element obtain dimensions from
+ * @param {Window | HTMLElement} element obtain dimensions from
  * @param {boolean} total `true` to use offset dimensions
  */
-function pollClientDimensions(element = window, total = false) {
-    if (element === window) {
-        return {
-            width: window.innerWidth,
-            height: window.innerHeight
-        };
+function pollClientDimensions(
+    element?: ContainerElement, total?: boolean
+): ClientDimensions {
+    if (!element) {
+        return windowDimensions();
     }
 
     // Includes element height and padding, no borders/margins!
@@ -48,6 +84,23 @@ function pollClientDimensions(element = window, total = false) {
     };
 }
 
+function windowScrollProperties() {
+    const props: ScrollProperties = {
+        scrollTop: window.pageYOffset,
+        scrollLeft: window.pageXOffset,
+        scrollWidth: Math.max(
+            document.body.scrollWidth,
+            DOCUMENT_ELEMENT.scrollWidth
+        ),
+        scrollHeight: Math.max(
+            document.body.scrollHeight,
+            DOCUMENT_ELEMENT.scrollHeight
+        ),
+    };
+
+    return props;
+}
+
 /**
  * Computes the scrolling properties of an element.
  * Includes:
@@ -58,22 +111,9 @@ function pollClientDimensions(element = window, total = false) {
  *
  * @param {*} element
  */
-function pollContainerScrollProperties(element = window) {
-    if (element === window) {
-        // `window` can scroll across the entire `document`
-
-        return {
-            scrollTop: window.pageYOffset,
-            scrollLeft: window.pageXOffset,
-            scrollWidth: Math.max(
-                document.body.scrollWidth,
-                DOCUMENT_ELEMENT.scrollWidth
-            ),
-            scrollHeight: Math.max(
-                document.body.scrollHeight,
-                DOCUMENT_ELEMENT.scrollHeight
-            )
-        };
+function pollContainerScrollProperties(element?: ContainerElement) {
+    if (!element) {
+        return windowScrollProperties();
     }
 
     const {
@@ -91,7 +131,7 @@ function pollContainerScrollProperties(element = window) {
     };
 }
 
-function pollScrollingState(element = window) {
+function pollScrollingState(element: ContainerElement) {
     if (!canUseDOM) {
         return null;
     }
@@ -99,7 +139,7 @@ function pollScrollingState(element = window) {
     const {
         width,
         height
-    } = pollClientDimensions(element);
+    } = pollClientDimensions(element, false);
     const {
         scrollWidth,
         scrollHeight,
@@ -132,10 +172,10 @@ function pollScrollingState(element = window) {
  * @param {Element | HTMLElement} element an element
  * @param {Window | Element} container a container element
  */
-function getElementRect(element, container = window) {
+function getElementRect(element: ContainerElement, container?: ContainerElement) {
     // `offsetWidth` and `offsetHeight` give the full width and height
     // including scrollbars.
-    if (container === window) {
+    if (!container) {
         return element.getBoundingClientRect();
     }
 
@@ -155,7 +195,7 @@ function getElementRect(element, container = window) {
     const {
         width: parentWidth,
         height: parentHeight
-    } = pollClientDimensions(parent);
+    } = elementDimensions(parent);
 
     const top = offsetTop - scrollTop;
     const left = offsetLeft - scrollLeft;
@@ -174,7 +214,7 @@ function getElementRect(element, container = window) {
     return result;
 }
 
-function didReachMaxScroll(container) {
+function didReachMaxScroll(container?: ContainerElement) {
     const {
         width,
         height

@@ -1,26 +1,23 @@
 import { viewportHeight, viewportWidth } from "./viewport";
-import { getElementRect } from "./container";
+import { getElementRect } from "./dom";
+import { ContainerElement } from "./env";
 
 /**
  * Factory for a function that evaluates a DOM element's position
  * in the viewport.
  */
 const createViewportEvaluator = (
-    viewportDimension,
-    upperValue,
-    lowerValue
+    viewportDimension: (container: ContainerElement) => number,
+    upperValue: "top" | "left",
+    lowerValue: "bottom" | "right"
 ) => (
-    element,
+    element: ContainerElement,
     offsets = {
         upper: 0,
         lower: 0
     },
-    container
+    container: ContainerElement
 ) => {
-    if (!element) {
-        return false;
-    }
-
     const { upper: up, lower: low } = offsets;
     const rect = getElementRect(element, container);
     const upper = rect[upperValue] - up;
